@@ -110,7 +110,7 @@ if __name__ == '__main__':
     import os
     os.chdir('..')
 
-    nos = NOSProcessor()
-    nos.load_raw()
-    nos.wrangle()
-    nos.save_pickle()
+    p = NOSProcessor()
+    p.load_raw()
+    p.wrangle()
+    p.save_pickle()

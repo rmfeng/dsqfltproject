@@ -34,7 +34,7 @@ if __name__ == '__main__':
     import os
     os.chdir('..')
 
-    nos = CPIProcessor()
-    nos.load_raw()
-    nos.wrangle()
-    nos.save_pickle()
+    p = CPIProcessor()
+    p.load_raw()
+    p.wrangle()
+    p.save_pickle()
