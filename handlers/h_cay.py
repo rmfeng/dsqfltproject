@@ -74,7 +74,7 @@ class CAYProcessor(BaseProcessor):
         model = sm.OLS(data['consumption'], sm.add_constant(data[['asset','wealth']]))
         results = model.fit()
 
-        data['resid']=results.resid
+        data['CAY']=results.resid
         
         data.index=pd.to_datetime(data.index)
         
