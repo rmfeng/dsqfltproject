@@ -1,6 +1,12 @@
 """
 tracks all fo the handlers we have implemented
 """
+from handlers.h_dp import DPProcessor
+from handlers.h_pe import PEProcessor
+from handlers.h_bm import BMProcessor
+from handlers.h_cape import CAPEProcessor
+from handlers.h_by import BYProcessor
+from handlers.h_def import DEFProcessor
 from handlers.h_cpi import CPIProcessor
 from handlers.h_nos import NOSProcessor
 from handlers.h_pcr import PCRProcessor
@@ -18,6 +24,8 @@ ALL_HANDLERS = [DPProcessor(),
                 PEProcessor(),
                 BMProcessor(),
                 CAPEProcessor(),
+                BYProcessor(),
+                DEFProcessor(),
                 CPIProcessor(),
                 NOSProcessor(),
                 PCRProcessor(),
