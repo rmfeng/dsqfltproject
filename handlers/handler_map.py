@@ -18,6 +18,7 @@ from handlers.h_cay import CAYProcessor
 from handlers.h_ic import ICProcessor
 from handlers.h_term import TERMProcessor
 from handlers.h_vrp import VRPProcessor
+from handlers.h_spx import SPXProcessor
 
 
 # add more handlers here as we implement them
@@ -37,4 +38,5 @@ ALL_HANDLERS = [DPProcessor(),
                 CAYProcessor(),
                 ICProcessor(),
                 TERMProcessor(),
-                VRPProcessor()]
+                VRPProcessor(),
+                SPXProcessor()]
