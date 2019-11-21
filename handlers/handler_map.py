@@ -14,7 +14,11 @@ from handlers.h_vrp import VRPProcessor
 
 
 # add more handlers here as we implement them
-ALL_HANDLERS = [CPIProcessor(),
+ALL_HANDLERS = [DPProcessor(),
+                PEProcessor(),
+                BMProcessor(),
+                CAPEProcessor(),
+                CPIProcessor(),
                 NOSProcessor(),
                 PCRProcessor(),
                 OILProcessor(),
