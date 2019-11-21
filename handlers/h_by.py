@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from handlers.BaseProcessor import BaseProcessor
 
 
+
 class BYProcessor(BaseProcessor):
     # specifications for raw file path and out path:
     NAME = "BY"

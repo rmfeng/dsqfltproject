@@ -7,11 +7,12 @@ import datetime as dt
 from handlers.BaseProcessor import BaseProcessor
 
 
+
 class DEFProcessor(BaseProcessor):
     # specifications for raw file path and out path:
-    NAME = "BY"
+    NAME = "DEF"
     RAW_PATHS = ['raw_data/FRED-BAA10YM.csv','raw_data/FRED-AAA10YM.csv']
-    OUT_PATH = 'pkl_data/BY.pkl'
+    OUT_PATH = 'pkl_data/DEF.pkl'
 
     def __init__(self):
         super().__init__(self.RAW_PATHS, self.OUT_PATH)

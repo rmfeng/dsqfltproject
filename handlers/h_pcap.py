@@ -4,8 +4,7 @@ handler for PCAPrice data
 import pandas as pd
 import numpy as np
 import datetime as dt
-#from handlers.BaseProcessor import BaseProcessor
-from BaseProcessor import BaseProcessor
+from handlers.BaseProcessor import BaseProcessor
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
