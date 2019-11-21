@@ -37,5 +37,4 @@ ALL_HANDLERS = [DPProcessor(),
                 CAYProcessor(),
                 ICProcessor(),
                 TERMProcessor(),
-                VRPProcessor(),
-                ]
+                VRPProcessor()]

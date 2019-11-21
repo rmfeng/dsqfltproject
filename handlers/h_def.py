@@ -7,7 +7,6 @@ import datetime as dt
 from handlers.BaseProcessor import BaseProcessor
 
 
-
 class DEFProcessor(BaseProcessor):
     # specifications for raw file path and out path:
     NAME = "DEF"
@@ -31,13 +30,17 @@ class DEFProcessor(BaseProcessor):
         self.raw_data.set_index('DATE',drop=True,inplace=True)
         self.raw_data.index=pd.to_datetime(self.raw_data.index)
         self.raw_data = self.raw_data.iloc[::-1]
-        self.raw_data = self.raw_data.iloc[self.raw_data.index >= '1990-06-08']
+
 
     def wrangle(self):
         print("Wrangling data for %s ... " % self.NAME)
         df_DEF = self.raw_data
         df_DEF_re = df_DEF.resample('D').ffill().dropna()
+        df_DEF_re = df_DEF_re.iloc[df_DEF_re.index >= '1990-06-08']
         self.wrangled_data = df_DEF_re
+
+
+
 
 
 
