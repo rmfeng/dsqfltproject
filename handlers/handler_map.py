@@ -19,6 +19,7 @@ from handlers.h_ic import ICProcessor
 from handlers.h_term import TERMProcessor
 from handlers.h_vrp import VRPProcessor
 from handlers.h_spx import SPXProcessor
+from handlers.h_ma import MAProcessor
 
 
 # add more handlers here as we implement them
@@ -39,4 +40,5 @@ ALL_HANDLERS = [DPProcessor(),
                 ICProcessor(),
                 TERMProcessor(),
                 VRPProcessor(),
-                SPXProcessor()]
+                SPXProcessor(),
+                MAProcessor()]
