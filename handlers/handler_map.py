@@ -7,6 +7,7 @@ from handlers.h_bm import BMProcessor
 from handlers.h_cape import CAPEProcessor
 from handlers.h_by import BYProcessor
 from handlers.h_def import DEFProcessor
+from handlers.h_pcap import PCAPriceProcessor
 from handlers.h_cpi import CPIProcessor
 from handlers.h_nos import NOSProcessor
 from handlers.h_pcr import PCRProcessor
@@ -26,6 +27,7 @@ ALL_HANDLERS = [DPProcessor(),
                 CAPEProcessor(),
                 BYProcessor(),
                 DEFProcessor(),
+                PCAPriceProcessor(),
                 CPIProcessor(),
                 NOSProcessor(),
                 PCRProcessor(),
