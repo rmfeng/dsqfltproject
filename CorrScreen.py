@@ -18,7 +18,6 @@ class CorrScreenRegressions:
         if self.R_130 is None:
             self.R_130 = pd.DataFrame(y).rolling(130).sum().shift(-129)
             self.R_130 = self.R_130.dropna().iloc[:,0].tolist()
-            #self.R_130 = [y[i:i+130].sum() for i in range(X.shape[1]-130)]
 
         screened_ft = [i for i in range(X.shape[0]) if abs(np.corrcoef(np.array([X[i,:-129],self.R_130]))[0,1])>self.threshold]
         self.screened_ft = screened_ft

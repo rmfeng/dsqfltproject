@@ -40,7 +40,7 @@ class SIMProcessor(BaseProcessor):
         dates['end']=dates['Year'].apply(lambda x: end.loc[x,0])
         dates['in']=(dates.index<=dates['end'])&(dates.index>=dates['start'])
 
-        dates['SIM']=dates['in'].rolling(130).sum().shift(-130)
+        dates['SIM']=dates['in'].rolling(130).sum().shift(-130)/130
         self.wrangled_data = dates[['SIM']]
 
 
