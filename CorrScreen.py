@@ -38,7 +38,7 @@ class CorrScreenPredictor:
 
         self.threshold = threshold
         self.data = data
-        self.X = np.array(data[[handle.NAME for handle in handlers.ALL_HANDLERS if handle.NAME != 'SPX']])
+        self.X = np.array(data[[handle.NAME for handle in handlers.ALL_HANDLERS if handle.NAME not in ['SPX','RF']]])
         self.y = np.array(data[['SPX']])
 
     def predict(self,nb_periods):
