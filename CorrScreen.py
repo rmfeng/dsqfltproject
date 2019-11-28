@@ -2,6 +2,7 @@ import handlers
 import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
+import pandas as pd
 
 class CorrScreenRegressions:
 
@@ -15,9 +16,11 @@ class CorrScreenRegressions:
 
         # screen variables: measure pairwise correlation between X(t) and y(t+130)
         if self.R_130 is None:
-            self.R_130 = [y[i:i+130].sum() for i in range(X.shape[1]-130)]
+            self.R_130 = pd.DataFrame(y).rolling(130).sum().shift(-129)
+            self.R_130 = self.R_130.dropna().iloc[:,0].tolist()
+            #self.R_130 = [y[i:i+130].sum() for i in range(X.shape[1]-130)]
 
-        screened_ft = [i for i in range(X.shape[0]) if abs(np.corrcoef(np.array([X[i,:-130],self.R_130]))[0,1])>self.threshold]
+        screened_ft = [i for i in range(X.shape[0]) if abs(np.corrcoef(np.array([X[i,:-129],self.R_130]))[0,1])>self.threshold]
         self.screened_ft = screened_ft
 
         # fit
@@ -33,6 +36,7 @@ class CorrScreenRegressions:
 class CorrScreenPredictor:
 
     def __init__(self,data,threshold=0.1):
+
         self.threshold = threshold
         self.data = data
         self.X = np.array(data[[handle.NAME for handle in handlers.ALL_HANDLERS if handle.NAME != 'SPX']])

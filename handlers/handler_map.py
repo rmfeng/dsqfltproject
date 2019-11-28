@@ -21,6 +21,7 @@ from handlers.h_vrp import VRPProcessor
 from handlers.h_spx import SPXProcessor
 from handlers.h_ma import MAProcessor
 from handlers.h_sim import SIMProcessor
+from handlers.h_rf import RFProcessor
 
 
 # add more handlers here as we implement them
@@ -43,4 +44,5 @@ ALL_HANDLERS = [DPProcessor(),
                 VRPProcessor(),
                 SPXProcessor(),
                 MAProcessor(),
-               SIMProcessor()]
+               SIMProcessor(),
+               RFProcessor()]
