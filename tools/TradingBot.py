@@ -49,14 +49,38 @@ class TradingBot:
         return [round(8*((np.exp(predictions[i])-1)-(np.exp(rf[i])-1)*fact),1) for i in range(len(predictions))]
 
     def comp_stats(self,spx_buy_hold,strat_rt,nb_periods):
+
+        # time
         years = nb_periods*20/252
+
+        # returns
         annual_return = 100*(strat_rt.iloc[-1,0]-1)/years
         annual_return_spx = 100*(spx_buy_hold[-1]-1)/years
-        print('------------------------------')
+
+        # bond returns (first switch log returns to returns)
+        bond_rt = np.exp(pd.DataFrame(self._rf(nb_periods),columns=['rt'])) - 1
+        bond_rt = bond_rt.dropna().iloc[:,0].tolist()
+
+        # spx premium computation (first switch log returns to retruns)
+        spx_rt = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)])-1
+        spx_rt = spx_rt.dropna().tolist()
+        spx_prem = [spx_rt[i]-bond_rt[i] for i in range(len(bond_rt))]
+
+        # strategy premium
+        strat_rt = np.exp(strat_rt) - 1
+        strat_rt = strat_rt.dropna().iloc[:,0].tolist()
+        strat_prem = [strat_rt[i]-bond_rt[i] for i in range(len(bond_rt))]
+
+        # sharpe
+        spx_sharpe = np.mean(spx_prem)/np.std(spx_rt)
+        strat_sharpe = np.mean(strat_prem)/np.std(strat_rt)
+
+        # disp
+        print('-----------------------------------------------')
         print('number of years    :',round(years,2))
-        print('annual return SPX  :',round(annual_return_spx,2),'%')
-        print('annual return strat:',round(annual_return,2),'%')
-        print('------------------------------')
+        print('annual return SPX  :',round(annual_return_spx,2),'%  |  Sharpe:',round(spx_sharpe,2))
+        print('annual return strat:',round(annual_return,2),'%  |  Sharpe:',round(strat_sharpe,2))
+        print('-----------------------------------------------')
 
 
     def CS_pos(self,nb_periods):
