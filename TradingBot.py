@@ -42,18 +42,11 @@ class TradingBot:
         # compute risk free rate
         rf = self._rf(nb_periods)
 
-        fact = 1/100
-
-        #plt.figure(figsize=(15,5))
-        #plt.plot([_rf*fact for _rf in rf],label='rf')
-        #plt.plot(predictions,label='predictions')
-        #plt.plot([predictions[i]-rf[i]*fact for i in range(len(predictions))],label='difference')
-        #plt.title('predictions vs. rf')
-        #plt.legend()
-        #plt.show()
+        fact = (130/90)*(1/100)
 
         # return eight times expected premium, rounded to the nearest 10%
-        return [round(8*(predictions[i]-rf[i]*fact),1) for i in range(len(predictions))]
+        # log returns are first transformed to returns by np.exp(*)-1
+        return [round(8*((np.exp(predictions[i])-1)-(np.exp(rf[i])-1)*fact),1) for i in range(len(predictions))]
 
     def comp_stats(self,spx_buy_hold,strat_rt,nb_periods):
         years = nb_periods*20/252
@@ -76,16 +69,6 @@ class TradingBot:
         CSP = CorrScreenPredictor(self.data,self.threshold)
         _p,ytrue,sft = CSP.predict(nb_periods)
 
-        #plt.hist(_p,bins=50)
-        #plt.title('returns distribution')
-        #plt.plot(self.data.index[2520:(2520+nb_periods*20)],_p)
-        #plt.show()
-
-        #plt.hist(p,bins=50)
-        #plt.title('premium distribution')
-        #plt.plot(self.data.index[2520:(2520+nb_periods*20)],p)
-        #plt.show()
-
         # create positions
         pos = self.create_pos(_p,nb_periods)
 
@@ -101,7 +84,7 @@ class TradingBot:
         timeline = self.data.index[2520:(2520+nb_periods*20)]
 
         # spx buy and hold
-        spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)].cumsum())
+        spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)]).cumprod()
 
         # strategy
         strat_rt = pd.DataFrame([1 + (CS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(CS_pos))]).cumprod()
