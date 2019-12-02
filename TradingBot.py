@@ -14,11 +14,7 @@ class TradingBot:
     def __init__(self,data,threshold=0.1):
         self.threshold = threshold
         self.data = data
-        rf = data['RF'][2520:].dropna().tolist()
-        rf = filter(lambda s: s != '.', rf)
-        self.rf = [float(s) for s in rf]
-        #self.rf = [float(s)*20/252 for s in rf]
-
+        self.rf = self.data['RF'][2520:].tolist()
 
     def _rf(self,nb_periods):
         #
@@ -46,13 +42,23 @@ class TradingBot:
         # compute risk free rate
         rf = self._rf(nb_periods)
 
+        fact = 1/100
+
+        #plt.figure(figsize=(15,5))
+        #plt.plot([_rf*fact for _rf in rf],label='rf')
+        #plt.plot(predictions,label='predictions')
+        #plt.plot([predictions[i]-rf[i]*fact for i in range(len(predictions))],label='difference')
+        #plt.title('predictions vs. rf')
+        #plt.legend()
+        #plt.show()
+
         # return eight times expected premium, rounded to the nearest 10%
-        return [round(8*(predictions[i]-rf[i]),1) for i in range(len(predictions))]
+        return [round(8*(predictions[i]-rf[i]*fact),1) for i in range(len(predictions))]
 
     def comp_stats(self,spx_buy_hold,strat_rt,nb_periods):
         years = nb_periods*20/252
-        annual_return = 100*(strat_rt.iloc[-1,0]/strat_rt.iloc[0,0] - 1)/years
-        annual_return_spx = 100*(spx_buy_hold[-1]/spx_buy_hold[0])/years
+        annual_return = 100*(strat_rt.iloc[-1,0]-1)/years
+        annual_return_spx = 100*(spx_buy_hold[-1]-1)/years
         print('------------------------------')
         print('number of years    :',round(years,2))
         print('annual return SPX  :',round(annual_return_spx,2),'%')
@@ -68,10 +74,7 @@ class TradingBot:
 
         # compute predictions
         CSP = CorrScreenPredictor(self.data,self.threshold)
-        __p,ytrue,sft = CSP.predict(nb_periods)
-
-        # log returns to returns
-        _p = np.exp(__p)
+        _p,ytrue,sft = CSP.predict(nb_periods)
 
         #plt.hist(_p,bins=50)
         #plt.title('returns distribution')
