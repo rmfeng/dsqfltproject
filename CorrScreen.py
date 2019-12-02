@@ -18,9 +18,9 @@ class CorrScreenRegressions:
         if self.R_130 is None:
             #self.R_130 = pd.DataFrame(y).rolling(130).sum().shift(-129)
             #self.R_130 = self.R_130.dropna().iloc[:,0].tolist()
-            
+
             self.R_130 = pd.DataFrame(y).dropna().iloc[:,0].tolist()
-            
+
         #screened_ft = [i for i in range(X.shape[0]) if abs(np.corrcoef(np.array([X[i,:-129],self.R_130]))[0,1])>self.threshold]
         screened_ft = [i for i in range(X.shape[0]) if abs(np.corrcoef(np.array([X[i,:],self.R_130]))[0,1])>self.threshold]
         self.screened_ft = screened_ft
@@ -70,9 +70,9 @@ class CorrScreenPredictor:
         p,ytrue,sft = self.predict(nb_periods)
 
         plt.figure(figsize=(15,5))
-        plt.plot(self.data.index[2520:(2520+nb_periods*20)],np.cumsum(p),label='screened ft')
-        plt.plot(self.data.index[2520:(2520+nb_periods*20)],np.cumsum(ytrue),label='true')
-        plt.title('linear regression for predicting returns')
+        plt.plot(self.data.index[2520:(2520+nb_periods*20)],np.cumsum(p),label='Correlation Screening')
+        plt.plot(self.data.index[2520:(2520+nb_periods*20)],np.cumsum(ytrue),label='True')
+        plt.title('Linear regression for predicting forward 130-day returns')
         plt.legend()
         plt.show()
 
@@ -84,7 +84,7 @@ class CorrScreenPredictor:
             for k in range(20):
                 msft.append(len(sft[i]))
         plt.figure(figsize=(15,5))
-        plt.plot(self.data.index[2520:(2520+nb_periods*20)],msft,label='screened ft')
+        plt.plot(self.data.index[2520:(2520+nb_periods*20)],msft,label='Screened Features')
         plt.ylim(0,17)
         plt.title('Number of features used')
         plt.legend()
