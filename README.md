@@ -1,4 +1,4 @@
-# Market Timing Strategy, Analyst Earnings Forecasts
+# Market Timing Strategy
 
 ### Team members
 - Jialu Xie
@@ -20,3 +20,4 @@
 - ***corr_screening_regression.ipynb*** runs the kitchen sink regression, as well as the (real time) correlation screening regression(s) showing features used, positions, and compounded wealth
 
 
+# Analyst Earnings Forecasts
