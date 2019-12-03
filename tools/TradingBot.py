@@ -126,26 +126,30 @@ class TradingBot:
         plt.show()
 
 
-    def CS_pos(self,nb_periods):
+    def CS_pos(self,nb_periods,RealTime=False):
 
         #
         # computes positions for correlation screening
         #
 
         # compute predictions
-        CSP = CorrScreenPredictor(self.data,self.threshold)
-        _p,ytrue,sft = CSP.predict(nb_periods)
+        CSP = CorrScreenPredictor(self.data,RealTime,self.threshold)
+
+        if not RealTime:
+            p,ytrue,sft = CSP.predict(nb_periods)
+        else:
+            p,ytrue,sft = CSP.predictRT(nb_periods)
 
         # create positions
-        pos = self.create_pos(_p,nb_periods)
+        pos = self.create_pos(p,nb_periods)
 
         # cap positions
         return self.cap_pos(pos)
 
-    def plot_wealth_CS(self,nb_periods):
+    def plot_wealth_CS(self,nb_periods,RealTime=False):
 
         # compute positions
-        CS_pos = self.CS_pos(nb_periods)
+        CS_pos = self.CS_pos(nb_periods,RealTime)
 
         # timeline
         timeline = self.data.index[2520:(2520+nb_periods*20)]
@@ -160,9 +164,40 @@ class TradingBot:
         self.comp_stats(spx_buy_hold,strat_rt,nb_periods)
 
         # plot
+        lbl = 'Correlation Screening'
+        if RealTime:
+            lbl = 'Real Time '+lbl
         plt.figure(figsize=(15,5))
-        plt.plot(timeline,strat_rt,label='Correlation Screening')
+        plt.plot(timeline,strat_rt,label=lbl)
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
-        plt.title('Comparison between Correlation Screening and and buy-and-hold SPX')
+        plt.title('Comparison between '+lbl+' and buy-and-hold SPX')
+        plt.legend()
+        plt.show()
+
+    def plot_wealth_all(self,nb_periods):
+
+        # compute positions
+        KS_pos = self.KS_pos(nb_periods)
+        CS_pos = self.CS_pos(nb_periods)
+        RTCS_pos = self.CS_pos(nb_periods,RealTime=True)
+
+        # timeline
+        timeline = self.data.index[2520:(2520+nb_periods*20)]
+
+        # spx buy and hold
+        spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)]).cumprod()
+
+        # strategy
+        ks = pd.DataFrame([1 + (KS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(KS_pos))]).cumprod()
+        cs = pd.DataFrame([1 + (CS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(CS_pos))]).cumprod()
+        rtcs = pd.DataFrame([1 + (RTCS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(RTCS_pos))]).cumprod()
+
+        # plot
+        plt.figure(figsize=(15,5))
+        plt.plot(timeline,ks,label='Kitchen Sink')
+        plt.plot(timeline,cs,label='Correlation Screening')
+        plt.plot(timeline,rtcs,label='Real Time Correlation Screening')
+        plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
+        plt.title('Comparison between all strategies and buy-and-hold SPX')
         plt.legend()
         plt.show()
