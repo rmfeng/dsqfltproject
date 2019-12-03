@@ -153,9 +153,10 @@ class CorrScreenPredictor:
         for i in range(nb_periods):
             for k in range(20):
                 msft.append(len(sft[i]))
-        plt.figure(figsize=(15,5))
+        fig = plt.figure(figsize=(15,5))
         plt.plot(self.data.index[2520:(2520+nb_periods*20)],msft,label=lbl)
         plt.ylim(0,17)
         plt.title('Number of features used')
         plt.legend()
+        fig.savefig('../images/'+lbl.replace(' ','')+'_features.png', dpi=fig.dpi)
         plt.show()

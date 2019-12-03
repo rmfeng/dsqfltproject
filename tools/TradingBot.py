@@ -118,11 +118,12 @@ class TradingBot:
         self.comp_stats(spx_buy_hold,strat_rt,nb_periods)
 
         # plot
-        plt.figure(figsize=(15,5))
+        fig = plt.figure(figsize=(15,5))
         plt.plot(timeline,strat_rt,label='Kitchen Sink')
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
         plt.title('Comparison between Kitchen Sink and buy-and-hold SPX')
         plt.legend()
+        fig.savefig('../images/'+'KitchenSink_Wealth.png', dpi=fig.dpi)
         plt.show()
 
 
@@ -167,11 +168,12 @@ class TradingBot:
         lbl = 'Correlation Screening'
         if RealTime:
             lbl = 'Real Time '+lbl
-        plt.figure(figsize=(15,5))
+        fig = plt.figure(figsize=(15,5))
         plt.plot(timeline,strat_rt,label=lbl)
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
         plt.title('Comparison between '+lbl+' and buy-and-hold SPX')
         plt.legend()
+        fig.savefig('../images/'+lbl.replace(' ','')+'.png', dpi=fig.dpi)
         plt.show()
 
     def plot_wealth_all(self,nb_periods):
@@ -193,11 +195,12 @@ class TradingBot:
         rtcs = pd.DataFrame([1 + (RTCS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(RTCS_pos))]).cumprod()
 
         # plot
-        plt.figure(figsize=(15,5))
+        fig = plt.figure(figsize=(15,5))
         plt.plot(timeline,ks,label='Kitchen Sink')
         plt.plot(timeline,cs,label='Correlation Screening')
         plt.plot(timeline,rtcs,label='Real Time Correlation Screening')
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
         plt.title('Comparison between all strategies and buy-and-hold SPX')
         plt.legend()
+        fig.savefig('../images/All_Wealth.png', dpi=fig.dpi)
         plt.show()
