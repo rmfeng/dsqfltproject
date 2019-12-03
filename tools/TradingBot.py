@@ -1,5 +1,6 @@
 import handlers
 from CorrScreen import CorrScreenPredictor
+from KitchenSink import KSPredictor
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -83,6 +84,48 @@ class TradingBot:
         print('-----------------------------------------------')
 
 
+    def KS_pos(self,nb_periods):
+
+        #
+        # computes positions for kitchen sink regression
+        #
+
+        # compute predictions
+        KSP = KSPredictor(self.data,self.threshold)
+        _p,ytrue,sft = KSP.predict(nb_periods)
+
+        # create positions
+        pos = self.create_pos(_p,nb_periods)
+
+        # cap positions
+        return self.cap_pos(pos)
+
+    def plot_wealth_KS(self,nb_periods):
+
+        # compute positions
+        KS_pos = self.KS_pos(nb_periods)
+
+        # timeline
+        timeline = self.data.index[2520:(2520+nb_periods*20)]
+
+        # spx buy and hold
+        spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)]).cumprod()
+
+        # strategy
+        strat_rt = pd.DataFrame([1 + (KS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(KS_pos))]).cumprod()
+
+        # print stats
+        self.comp_stats(spx_buy_hold,strat_rt,nb_periods)
+
+        # plot
+        plt.figure(figsize=(15,5))
+        plt.plot(timeline,strat_rt,label='Kitchen Sink')
+        plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
+        plt.title('Comparison between Kitchen Sink and buy-and-hold SPX')
+        plt.legend()
+        plt.show()
+
+
     def CS_pos(self,nb_periods):
 
         #
@@ -120,6 +163,6 @@ class TradingBot:
         plt.figure(figsize=(15,5))
         plt.plot(timeline,strat_rt,label='Correlation Screening')
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
-        plt.title('Comparison between strategy and SPX')
+        plt.title('Comparison between Correlation Screening and and buy-and-hold SPX')
         plt.legend()
         plt.show()
