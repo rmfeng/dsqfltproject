@@ -1,6 +1,7 @@
 import handlers
 from CorrScreen import CorrScreenPredictor
 from KitchenSink import KSPredictor
+from ElasticNet import ENPredictor
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -176,12 +177,55 @@ class TradingBot:
         fig.savefig('../images/'+lbl.replace(' ','')+'.png', dpi=fig.dpi)
         plt.show()
 
+    def EN_pos(self,nb_periods):
+
+        #
+        # computes positions for elastic net
+        #
+
+        # compute predictions
+        ENP = ENPredictor(self.data)
+        p,ytrue,sft = ENP.predict(nb_periods)
+
+        # create positions
+        pos = self.create_pos(p,nb_periods)
+
+        # cap positions
+        return self.cap_pos(pos)
+
+    def plot_wealth_EN(self,nb_periods,RealTime=False):
+
+        # compute positions
+        EN_pos = self.EN_pos(nb_periods)
+
+        # timeline
+        timeline = self.data.index[2520:(2520+nb_periods*20)]
+
+        # spx buy and hold
+        spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)]).cumprod()
+
+        # strategy
+        strat_rt = pd.DataFrame([1 + (EN_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(EN_pos))]).cumprod()
+
+        # print stats
+        self.comp_stats(spx_buy_hold,strat_rt,nb_periods)
+
+        # plot
+        fig = plt.figure(figsize=(15,5))
+        plt.plot(timeline,strat_rt,label='Elastic Net')
+        plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
+        plt.title('Comparison between Elastic Net and buy-and-hold SPX')
+        plt.legend()
+        fig.savefig('../images/ElasticNet.png', dpi=fig.dpi)
+        plt.show()
+
     def plot_wealth_all(self,nb_periods):
 
         # compute positions
         KS_pos = self.KS_pos(nb_periods)
         CS_pos = self.CS_pos(nb_periods)
         RTCS_pos = self.CS_pos(nb_periods,RealTime=True)
+        EN_pos = self.EN_pos(nb_periods)
 
         # timeline
         timeline = self.data.index[2520:(2520+nb_periods*20)]
@@ -193,12 +237,14 @@ class TradingBot:
         ks = pd.DataFrame([1 + (KS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(KS_pos))]).cumprod()
         cs = pd.DataFrame([1 + (CS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(CS_pos))]).cumprod()
         rtcs = pd.DataFrame([1 + (RTCS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(RTCS_pos))]).cumprod()
+        en = pd.DataFrame([1 + (EN_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(EN_pos))]).cumprod()
 
         # plot
         fig = plt.figure(figsize=(15,5))
         plt.plot(timeline,ks,label='Kitchen Sink')
         plt.plot(timeline,cs,label='Correlation Screening')
         plt.plot(timeline,rtcs,label='Real Time Correlation Screening')
+        plt.plot(timeline,en,label='Elastic Net')
         plt.plot(timeline,spx_buy_hold,label='SPX buy and hold')
         plt.title('Comparison between all strategies and buy-and-hold SPX')
         plt.legend()
