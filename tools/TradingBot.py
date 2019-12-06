@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 class TradingBot:
 
     # index:             daily positions in SPX
@@ -44,38 +45,36 @@ class TradingBot:
         # compute risk free rate
         rf = self._rf(nb_periods)
 
-        fact = (130/90)*(1/100)
+        fact = (130/360)  # 130 days vs annualized risk free rate quotes
 
         # return eight times expected premium, rounded to the nearest 10%
         # log returns are first transformed to returns by np.exp(*)-1
-        return [round(8*((np.exp(predictions[i])-1)-(np.exp(rf[i])-1)*fact),1) for i in range(len(predictions))]
+        return [round(8*((np.exp(predictions[i])-1)-rf[i]*fact), 1) for i in range(len(predictions))]
 
-    def comp_stats(self,spx_buy_hold,strat_rt,nb_periods):
+    def comp_stats(self,spx_buy_hold,strat_rt_in,nb_periods):
 
         # time
         years = nb_periods*20/252
 
-        # returns
-        annual_return = 100*(strat_rt.iloc[-1,0]-1)/years
-        annual_return_spx = 100*(spx_buy_hold[-1]-1)/years
+        # bond returns
+        bond_rt = pd.DataFrame(self._rf(nb_periods), columns=['rt']) / 360  # make it a daily rate
+        bond_tri = (bond_rt + 1).cumprod().fillna(1)
 
-        # bond returns (first switch log returns to returns)
-        bond_rt = np.exp(pd.DataFrame(self._rf(nb_periods),columns=['rt'])) - 1
-        bond_rt = bond_rt.dropna().iloc[:,0].tolist()
+        # returns
+        annual_return = 100 * (strat_rt_in.iloc[-1, 0] - 1) / years
+        annual_return_spx = 100 * (spx_buy_hold[-1] - 1) / years
+        annual_bond_return = 100 * (bond_tri['rt'].values[-1] - 1) / years
 
         # spx premium computation (first switch log returns to retruns)
-        spx_rt = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)])-1
+        spx_rt = np.exp(self.data['SPX'][2520:(2520 + nb_periods * 20)]) - 1
         spx_rt = spx_rt.dropna().tolist()
-        spx_prem = [spx_rt[i]-bond_rt[i] for i in range(len(bond_rt))]
 
-        # strategy premium
-        strat_rt = np.exp(strat_rt) - 1
-        strat_rt = strat_rt.dropna().iloc[:,0].tolist()
-        strat_prem = [strat_rt[i]-bond_rt[i] for i in range(len(bond_rt))]
+        strat_rt = strat_rt_in.fillna(1).pct_change()
+        strat_rt = strat_rt.dropna().iloc[:, 0].tolist()
 
         # sharpe
-        spx_sharpe = np.mean(spx_prem)/np.std(spx_rt)
-        strat_sharpe = np.mean(strat_prem)/np.std(strat_rt)
+        spx_sharpe = (annual_return_spx - annual_bond_return) / (np.std(spx_rt) * np.sqrt(252)) / 100
+        strat_sharpe = (annual_return - annual_bond_return) / (np.std(strat_rt) * np.sqrt(252)) / 100
 
         # disp
         print('-----------------------------------------------')

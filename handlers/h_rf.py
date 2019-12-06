@@ -7,8 +7,6 @@ import datetime as dt
 from handlers.BaseProcessor import BaseProcessor
 
 
-
-
 class RFProcessor(BaseProcessor):
     # specifications for raw file path and out path:
     NAME = "RF"
@@ -28,18 +26,16 @@ class RFProcessor(BaseProcessor):
         self.raw_data.set_index('DATE',drop=True,inplace=True)
         self.raw_data.index=pd.to_datetime(self.raw_data.index)
 
-
     def wrangle(self):
         print("Wrangling data for %s ... " % self.NAME)
         df_RF = self.raw_data
+        df_RF.columns = ['RF']
+        df_RF = df_RF[df_RF['RF'] != '.']
         df_RF_re = df_RF.resample('D').ffill().dropna()
         df_RF_re = df_RF_re.iloc[df_RF_re.index >= '2000-01-01']
-        df_RF_re.columns = ['RF']
-        df_RF_re = df_RF_re[df_RF_re['RF'] != '.']
         df_RF_re['RF'] = df_RF_re['RF'].astype('float')
-        df_RF_re = df_RF_re.pct_change().dropna().replace([np.inf, -np.inf], np.nan).fillna(0).clip(-0.9999,1)
-        self.wrangled_data = np.log(df_RF_re + 1)
-
+        df_RF_re['RF'] = df_RF_re['RF'] / 100
+        self.wrangled_data = df_RF_re
 
 
 # testing
