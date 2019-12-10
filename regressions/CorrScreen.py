@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.impute import SimpleImputer
 
 class CorrScreenRegressions:
 
@@ -38,8 +39,9 @@ class CorrScreenPredictor:
         self.threshold = threshold
         self.data = data
         self.RealTime = RealTime
-        self.X = np.array(self.data[[handle.NAME for handle in handlers.ALL_HANDLERS if handle.NAME not in ['SPX','RF','spx_tp130']]])
-        self.y = np.array(self.data[['spx_tp130']])
+        si = SimpleImputer(strategy='median')
+        self.X = si.fit_transform(np.array(self.data[[handle.NAME for handle in handlers.ALL_HANDLERS if handle.NAME not in ['SPX','RF','spx_tp130']]]))
+        self.y = si.fit_transform(np.array(self.data[['spx_tp130']]))
 
     def predict(self,nb_periods):
 
