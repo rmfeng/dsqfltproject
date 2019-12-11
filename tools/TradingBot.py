@@ -158,6 +158,7 @@ class TradingBot:
         # spx buy and hold
         spx_buy_hold = np.exp(self.data['SPX'][2520:(2520+nb_periods*20)]).cumprod()
 
+
         # strategy
         strat_rt = pd.DataFrame([1 + (CS_pos[i] * (np.exp(self.data['SPX'][2520:(2520+nb_periods*20)][i]) - 1)) for i in range(len(CS_pos))]).cumprod()
 

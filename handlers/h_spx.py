@@ -34,7 +34,6 @@ class SPXProcessor(BaseProcessor):
         SP500 = SP500.loc[(SP500.index>='1990-06-07') & (SP500.index<='2019-09-30')]
         SP500['Adj Close'] = SP500['Adj Close'].astype(float)
         SP500.columns = ['SPX']
-        print(np.log(SP500.pct_change().dropna() + 1))
         self.wrangled_data = np.log(SP500.pct_change().dropna() + 1)
 
 
